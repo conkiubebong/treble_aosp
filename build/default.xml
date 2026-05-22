@@ -14,10 +14,24 @@
 
   <!-- ponces -->
   <project name="ponces/vendor_ponces" path="vendor/ponces" remote="github" revision="android-14.0" />
-  <project name="ponces/vendor_gapps" path="vendor/gapps" remote="gitlab" revision="android-14.0" clone-depth="1" />
   <project name="ponces/treble_adapter" path="treble_adapter" remote="github" revision="master" />
   <project name="ponces/packages_apps_ParanoidSense" path="packages/apps/ParanoidSense" remote="github" revision="uvite" />
-  <project name="ponces/packages_services_OmniJaws" path="packages/services/OmniJaws" remote="github" revision="14.0" />
+
+  <!-- Replace private/failed ponces repos -->
+
+  <project
+      name="MindTheGapps/vendor_gapps"
+      path="vendor/gapps"
+      remote="gitlab"
+      revision="f75de2aa2af5d2662e394d833464e8dda55c9e6e"
+      clone-depth="1" />
+
+  <project
+      name="crdroidandroid/android_packages_services_OmniJaws"
+      path="packages/services/OmniJaws"
+      remote="github"
+      revision="14.0"
+      clone-depth="1" />
 
   <!-- LineageOS -->
   <remove-project name="platform/packages/apps/Launcher3" />
