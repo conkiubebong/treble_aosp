@@ -28,7 +28,7 @@ initRepos() {
 
 syncRepos() {
     echo "--> Syncing repos"
-    repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc --all) || repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc --all)
+    repo sync -c --force-sync --no-clone-bundle --no-tags -j$8 || repo sync -c --force-sync --no-clone-bundle --no-tags -j$8
     echo
 }
 
@@ -89,14 +89,14 @@ buildVndkliteVariant() {
 }
 
 buildVariants() {
-    buildVariant treble_a64_bvN
-    buildVariant treble_a64_bgN
-    buildVariant treble_arm64_bvN
+    # buildVariant treble_a64_bvN
+    # buildVariant treble_a64_bgN
+    # buildVariant treble_arm64_bvN
     buildVariant treble_arm64_bgN
-    buildVndkliteVariant treble_a64_bvN
-    buildVndkliteVariant treble_a64_bgN
-    buildVndkliteVariant treble_arm64_bvN
-    buildVndkliteVariant treble_arm64_bgN
+    # buildVndkliteVariant treble_a64_bvN
+    # buildVndkliteVariant treble_a64_bgN
+    # buildVndkliteVariant treble_arm64_bvN
+    # buildVndkliteVariant treble_arm64_bgN
 }
 
 generatePackages() {
