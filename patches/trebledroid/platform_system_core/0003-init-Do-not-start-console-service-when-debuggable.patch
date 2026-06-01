@@ -1,7 +1,7 @@
-From 24328f6b9b0cc77c0302c4b6e5a1a47976e9f768 Mon Sep 17 00:00:00 2001
+From 18eb220aa727e3a010b1f63240074cbadb40bf28 Mon Sep 17 00:00:00 2001
 From: Isaac Chen <tingyi364@gmail.com>
 Date: Wed, 23 Jun 2021 13:07:30 +0800
-Subject: [PATCH 03/26] init: Do not start console service when debuggable
+Subject: [PATCH 03/28] init: Do not start console service when debuggable
 
 Google added a check for this in R, when it's running it will show a
 notification about that performance is impacted.
@@ -13,19 +13,19 @@ Change-Id: I34cfd6b42d3b9aee4b3e63181480cfb8b1255f29
  1 file changed, 3 deletions(-)
 
 diff --git a/rootdir/init.rc b/rootdir/init.rc
-index 8a2ed9fac..960534805 100644
+index 471059bc8..0019c38d6 100644
 --- a/rootdir/init.rc
 +++ b/rootdir/init.rc
-@@ -1306,9 +1306,6 @@ on property:ro.debuggable=1
+@@ -1315,9 +1315,6 @@ on property:ro.debuggable=1
      # Give reads to anyone for the accessibility trace folder on debug builds.
      chmod 0775 /data/misc/a11ytrace
  
 -on init && property:ro.debuggable=1
 -    start console
 -
- on userspace-reboot-requested
-   # TODO(b/135984674): reset all necessary properties here.
-   setprop sys.boot_completed ""
+ # Multi-Gen LRU Experiment
+ on property:persist.device_config.mglru_native.lru_gen_config=none
+   write /sys/kernel/mm/lru_gen/enabled 0
 -- 
-2.34.1
+2.43.0
 

@@ -10,9 +10,9 @@ for project in $(cd $patches/patches/$tree; echo *); do
     [ "$p" == build ] && p=build/make
     [ "$p" == treble/app ] && p=treble_app
     [ "$p" == vendor/hardware/overlay ] && p=vendor/hardware_overlay
-    pushd $p &>/dev/null
+    pushd $p 1>/dev/null
     for patch in $patches/patches/$tree/$project/*.patch; do
         git am $patch || exit
     done
-    popd &>/dev/null
+    popd 1>/dev/null
 done
