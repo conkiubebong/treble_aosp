@@ -11,27 +11,28 @@ fi
 export LC_ALL=C
 
 manifest_url="https://android.googlesource.com/platform/manifest"
-aosp="android-8.1.0_r65"
-phh="android-8.1"
+aosp="android-12.1.0_r11"
+phh="android-12.0"
 
-build_target="$1"
+#build_target="$1"
+build_target="android-12.0"
 rebuild_release=""
 if [ "$1" == "android-9.0" ];then
-    manifest_url="https://gitlab.com/aosp-security/manifest"
-    aosp="android-9.0.0_r53-r47"
-    phh="android-9.0"
+   manifest_url="https://gitlab.com/aosp-security/manifest"
+   aosp="android-9.0.0_r53-r47"
+   phh="android-9.0"
 elif [ "$1" == "android-10.0" ];then
-    manifest_url="https://android.googlesource.com/platform/manifest"
-    aosp="android-10.0.0_r41"
-    phh="android-10.0"
+   manifest_url="https://android.googlesource.com/platform/manifest"
+   aosp="android-10.0.0_r41"
+   phh="android-10.0"
 elif [ "$1" == "android-11.0" ];then
-    manifest_url="https://android.googlesource.com/platform/manifest"
-    aosp="android-11.0.0_r48"
-    phh="android-11.0"
+   manifest_url="https://android.googlesource.com/platform/manifest"
+   aosp="android-11.0.0_r48"
+   phh="android-11.0"
 elif [ "$1" == "android-12.0" ];then
-    manifest_url="https://android.googlesource.com/platform/manifest"
-    aosp="android-12.1.0_r11"
-    phh="android-12.0"
+   manifest_url="https://android.googlesource.com/platform/manifest"
+   aosp="android-12.1.0_r11"
+   phh="android-12.0"
 else
 	# guess android version from version number
 	rebuild_release="yes"
@@ -48,14 +49,15 @@ else
 	fi
 	# download manifest with the given version number
 	tmp_manifest_source=$(mktemp -d)
-	wget "https://github.com/phhusson/treble_experimentations/releases/download/$1/manifest.xml" -O $tmp_manifest_source/manifest.xml
-	sed -i 's/<remote name="aosp" fetch=".." review="https:\/\/android-review.googlesource.com\/"\/>/<remote name="aosp" fetch="https:\/\/android.googlesource.com\/" review="https:\/\/android-review.googlesource.com\/"\/>/' $tmp_manifest_source/manifest.xml
-	(cd $tmp_manifest_source; git init; git add manifest.xml; git commit -m "$1")
+	cp $originFolder/v416/manifest.xml $tmp_manifest_source/manifest.xml
+	# wget "https://github.com/phhusson/treble_experimentations/releases/download/$1/manifest.xml" -O $tmp_manifest_source/manifest.xml
+	# sed -i 's/<remote name="aosp" fetch=".." review="https:\/\/android-review.googlesource.com\/"\/>/<remote name="aosp" fetch="https:\/\/android.googlesource.com\/" review="https:\/\/android-review.googlesource.com\/"\/>/' $tmp_manifest_source/manifest.xml
+	# (cd $tmp_manifest_source; git init; git add manifest.xml; git commit -m "$1")
 fi
 
 if [ "$release" == true ];then
-    [ -z "$version" ] && exit 1
-    [ ! -f "$originFolder/release/config.ini" ] && exit 1
+   [ -z "$version" ] && exit 1
+   [ ! -f "$originFolder/release/config.ini" ] && exit 1
 fi
 
 if [ -n "$rebuild_release" ];then
@@ -68,11 +70,12 @@ else
 		git clone https://github.com/phhusson/treble_manifest .repo/local_manifests -b $phh
 	fi
 fi
-repo sync -c -j6 --force-sync || repo sync -c -j6 --force-sync
+repo sync -c -j6  --no-clone-bundle --force-sync || repo sync -c -j6 --force-sync  --no-clone-bundle 
 
 repo forall -r '.*opengapps.*' -c 'git lfs fetch && git lfs checkout'
+
 (cd device/phh/treble; git clean -fdx; if [ -f phh.mk ];then bash generate.sh phh;else bash generate.sh;fi)
-(cd vendor/foss; git clean -fdx; bash update.sh)
+(cd vendor/foss; git clean -fdx; bash update.sh) &
 if [ "$build_target" == "android-12.0" ] && grep -q lottie packages/apps/Launcher3/Android.bp;then
     (cd vendor/partner_gms; git am $originFolder/0001-Fix-SearchLauncher-for-Android-12.1.patch || true)
     (cd vendor/partner_gms; git am $originFolder/0001-Update-SetupWizard-to-A12.1-to-fix-fingerprint-enrol.patch || true)
@@ -101,29 +104,29 @@ if [ "$build_target" == "android-12.0" ];then
         git clone https://github.com/phhusson/vendor_vndk -b android-10.0
     )
 
-	buildVariant treble_arm64_bvS-userdebug squeak-arm64-ab-vanilla
-    ( cd sas-creator; bash lite-adapter.sh 64; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-vanilla.img.xz )
-    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-vanilla-secure.img.xz )
+#	buildVariant treble_arm64_bvS-userdebug squeak-arm64-ab-vanilla
+#    ( cd sas-creator; bash lite-adapter.sh 64; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-vanilla.img.xz )
+#    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-vanilla-secure.img.xz )
 
 	buildVariant treble_arm64_bgS-userdebug squeak-arm64-ab-gapps
-    ( cd sas-creator; bash lite-adapter.sh 64; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-gapps.img.xz )
-    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-gapps-secure.img.xz )
+#    ( cd sas-creator; bash lite-adapter.sh 64; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-gapps.img.xz )
+#    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-gapps-secure.img.xz )
 
-	buildVariant treble_arm64_boS-userdebug squeak-arm64-ab-gogapps
-    ( cd sas-creator; bash lite-adapter.sh 64; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-gogapps.img.xz )
-    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-gogapps-secure.img.xz )
+#	buildVariant treble_arm64_boS-userdebug squeak-arm64-ab-gogapps
+#    ( cd sas-creator; bash lite-adapter.sh 64; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-gogapps.img.xz )
+#    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-gogapps-secure.img.xz )
+#
+#	buildVariant treble_arm64_bfS-userdebug squeak-arm64-ab-floss
+#    ( cd sas-creator; bash lite-adapter.sh 64; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-floss.img.xz )
+#    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-floss-secure.img.xz )
 
-	buildVariant treble_arm64_bfS-userdebug squeak-arm64-ab-floss
-    ( cd sas-creator; bash lite-adapter.sh 64; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-floss.img.xz )
-    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm64-ab-vndklite-floss-secure.img.xz )
+#	buildVariant treble_a64_bvS-userdebug squeak-arm32_binder64-ab-vanilla
+#    ( cd sas-creator; bash lite-adapter.sh 32; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm32_binder64-ab-vndklite-vanilla.img.xz )
+#    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm32_binder64-ab-vndklite-vanilla-secure.img.xz )
 
-	buildVariant treble_a64_bvS-userdebug squeak-arm32_binder64-ab-vanilla
-    ( cd sas-creator; bash lite-adapter.sh 32; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm32_binder64-ab-vndklite-vanilla.img.xz )
-    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm32_binder64-ab-vndklite-vanilla-secure.img.xz )
-
-	buildVariant treble_a64_boS-userdebug squeak-arm32_binder64-ab-gogapps
-    ( cd sas-creator; bash lite-adapter.sh 32; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm32_binder64-ab-vndklite-gogapps.img.xz )
-    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm32_binder64-ab-vndklite-gogapps-secure.img.xz )
+#	buildVariant treble_a64_boS-userdebug squeak-arm32_binder64-ab-gogapps
+#    ( cd sas-creator; bash lite-adapter.sh 32; xz -c s.img -T0 > ../release/$rom_fp/system-squeak-arm32_binder64-ab-vndklite-gogapps.img.xz )
+#    ( cd sas-creator; bash securize.sh s.img; xz -c s-secure.img -T0 > ../release/$rom_fp/system-squeak-arm32_binder64-ab-vndklite-gogapps-secure.img.xz )
 elif [ "$build_target" == "android-11.0" ];then
     (
         git clone https://github.com/phhusson/sas-creator
@@ -214,18 +217,18 @@ else
 	rm -Rf out/target/product/phhgsi*
 fi
 
-if [ "$release" == true ];then
-    (
-        rm -Rf venv
-        pip install virtualenv
-        export PATH=$PATH:~/.local/bin/
-        virtualenv -p /usr/bin/python3 venv
-        source venv/bin/activate
-        pip install -r $originFolder/release/requirements.txt
-
-        name="AOSP 8.1"
-        [ "$build_target" == "android-9.0" ] && name="AOSP 9.0"
-        python $originFolder/release/push.py "$name" "$version" release/$rom_fp/
-        rm -Rf venv
-    )
-fi
+#if [ "$release" == true ];then
+#    (
+#        rm -Rf venv
+#        pip install virtualenv
+#        export PATH=$PATH:~/.local/bin/
+#        virtualenv -p /usr/bin/python3 venv
+#        source venv/bin/activate
+#        pip install -r $originFolder/release/requirements.txt
+#
+#        name="AOSP 8.1"
+#        [ "$build_target" == "android-9.0" ] && name="AOSP 9.0"
+#        python $originFolder/release/push.py "$name" "$version" release/$rom_fp/
+#        rm -Rf venv
+#    )
+#fi
