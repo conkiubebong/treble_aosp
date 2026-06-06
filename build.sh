@@ -30,7 +30,7 @@ initRepos() {
 
 syncRepos() {
     echo "--> Syncing repos"
-    repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc --ignore=2) || repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc --ignore=2)
+    repo sync -c --force-sync --no-clone-bundle --no-tags -j6 || repo sync -c --force-sync --no-clone-bundle --no-tags -j6
     echo
 }
 
@@ -77,15 +77,15 @@ buildVariant() {
     lunch "$1"-bp2a-userdebug
     make -j$(nproc --ignore=2) installclean
     make -j$(nproc --ignore=2) systemimage
-    make -j$(nproc --ignore=2) target-files-package otatools
-    bash $BUILD_ROOT/sign.sh "vendor/ponces-priv/keys" $OUT/signed-target_files.zip
-    unzip -joq $OUT/signed-target_files.zip IMAGES/system.img -d $OUT
-    mv $OUT/system.img $OUTPUT_DIR/system-"$1".img
+    # make -j$(nproc --ignore=2) target-files-package otatools
+    # bash $BUILD_ROOT/sign.sh "vendor/ponces-priv/keys" $OUT/signed-target_files.zip
+    # unzip -joq $OUT/signed-target_files.zip IMAGES/system.img -d $OUT
+    # mv $OUT/system.img $OUTPUT_DIR/system-"$1".img
     echo
 }
 
 buildVariants() {
-    buildVariant treble_arm64_bvN
+    # buildVariant treble_arm64_bvN
     buildVariant treble_arm64_bgN
 }
 
@@ -131,12 +131,12 @@ applyPatches
 setupEnv
 buildTrebleApp
 [ ! -z "$BUILD_VARIANT" ] && buildVariant "$BUILD_VARIANT" || buildVariants
-generatePackages
-generateOta
+# generatePackages
+# generateOta
 
-END=$(date +%s)
-ELAPSEDM=$(($(($END-$START))/60))
-ELAPSEDS=$(($(($END-$START))-$ELAPSEDM*60))
+# END=$(date +%s)
+# ELAPSEDM=$(($(($END-$START))/60))
+# ELAPSEDS=$(($(($END-$START))-$ELAPSEDM*60))
 
-echo "--> Buildbot completed in $ELAPSEDM minutes and $ELAPSEDS seconds"
-echo
+# echo "--> Buildbot completed in $ELAPSEDM minutes and $ELAPSEDS seconds"
+# echo
